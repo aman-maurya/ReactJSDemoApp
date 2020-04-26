@@ -19,7 +19,10 @@ const Movie = (props) => {
             return (
 				<div key={`card${idx}${row.id}`} className="col-lg-3 col-md-3 mb-4">
 					<div className="card h-100">
-						<a href="#">
+						<a href="#" onClick={(e) => {
+							e.preventDefault();
+							props.viewMovieInfo(row.id);
+						}}>
 							<img className="card-img-top" src={image(row.poster_path)} alt="" />
 						</a>
 						<div className="card-body">
@@ -28,11 +31,16 @@ const Movie = (props) => {
 									<div className="col-md-8">
 										<h5>{row.title}</h5>
 									</div>
-									<div style={{
-                                        textAlign:'right',
-                                        fontSize:14,
-                                        paddingTop:3
-                                    }} className="col-md-4">{row.vote_average}</div>
+									<div
+										style={{
+											textAlign: 'right',
+											fontSize: 14,
+											paddingTop: 3,
+										}}
+										className="col-md-4"
+									>
+										{row.vote_average}
+									</div>
 								</div>
 							</div>
 

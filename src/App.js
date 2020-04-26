@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Search from './components/Search';
 import MovieList from './components/MovieList';
+import MovieInfo from './components/MovieInfo';
 import Pagination from './components/Pagination';
 
 class App extends Component {
@@ -12,6 +13,7 @@ class App extends Component {
 			searchTerm: '',
 			totalResults: 0,
 			currentPage: 1,
+			currentMovie: null,
 		};
 
 		this.searchRef = React.createRef();
@@ -33,7 +35,6 @@ class App extends Component {
 		fetch(url)
 			.then((data) => data.json())
 			.then((data) => {
-				console.log(data);
 				this.setState({ movies: [...data.results], totalResults: data.total_results });
 			})
 			.catch((err) => {
@@ -67,28 +68,57 @@ class App extends Component {
 
 	home = () => {
 		this.getData();
-		this.setState({ searchTerm: '', currentPage:1 });
+		this.setState({ searchTerm: '', currentPage: 1 });
 		this.searchRef.current.reset();
 	};
 
+	viewMovieInfo = (id) => {
+    let url = `https://api.themoviedb.org/3/movie/${id}?api_key=${this.apiKey}&language=en-US&append_to_response=credits`;
+    fetch(url)
+		.then((data) => data.json())
+		.then((data) => {
+      this.setState({ currentMovie: data });
+		}).catch((e) => {
+      this.setState({ currentMovie: null });
+    });
+	}
+
+	backBtn = () => {
+		this.setState({ currentMovie: null });
+	}
+
 	render() {
 		const numberPage = Math.floor(this.state.totalResults / 20);
+
 		return (
 			<div>
-				<div className="row movie-list">
-					<MovieList
-						ref={this.searchRef}
-						movies={this.state.movies}
-						handleSubmit={this.handleSubmit}
-						handleChange={this.handleChange}
-						home={this.home}
-					/>
-					{this.state.totalResults > 20 ? (
-						<Pagination pages={numberPage} nextPage={this.nextPage} currentPage={this.state.currentPage} />
-					) : (
-						''
-					)}
-				</div>
+				{this.state.currentMovie !== null ? (
+					<div className="movie-info">
+						<MovieInfo movie={this.state.currentMovie} backBtn={this.backBtn} />
+					</div>
+				) : (
+					<div>
+						<div className="row movie-list">
+							<MovieList
+								ref={this.searchRef}
+								movies={this.state.movies}
+								handleSubmit={this.handleSubmit}
+								handleChange={this.handleChange}
+								home={this.home}
+								viewMovieInfo={this.viewMovieInfo}
+							/>
+							{this.state.totalResults > 20 ? (
+								<Pagination
+									pages={numberPage}
+									nextPage={this.nextPage}
+									currentPage={this.state.currentPage}
+								/>
+							) : (
+								''
+							)}
+						</div>
+					</div>
+				)}
 			</div>
 		);
 	}

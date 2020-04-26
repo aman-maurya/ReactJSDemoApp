@@ -21,7 +21,7 @@ const MovieList = React.forwardRef((props,ref) => {
 				</div>
 			</nav>
 			{movies.map((rows, idx) => {
-				return <Movie rows={rows} key={`box${idx}`} />;
+				return <Movie viewMovieInfo={props.viewMovieInfo} rows={rows} key={`box${idx}`} />;
 			})}
 		</div>
 	);
